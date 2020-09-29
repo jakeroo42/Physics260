@@ -1,0 +1,73 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Feb  8 16:53:45 2019
+
+@author: jakerabinowitz
+"""
+
+#Pset 3 Question 2
+
+from pylab import plot, xlabel, ylabel, show, xlim, title, hot, jet,linspace, legend, colorbar, imshow
+from numpy import cos, sin, pi, loadtxt, empty
+
+#Writing function J(m,x)
+def J(m, x):
+    #Function f(theta)
+    def f(theta):
+        return ((1/pi)*cos(m*theta-x*sin(theta)))
+    #initiate IntegralJ
+    integralJ = 0
+    for i in range(1, N+1):
+          area = .5*h*(f(theta1+(i-1)*h)+f(theta1+i*h))
+          integralJ += area
+    return integralJ
+
+
+#Integration Parameters for part a
+N = 1000
+theta1 = 0
+theta2 = pi
+h = (theta2-theta1)/N
+
+x = linspace(0,20,1000)
+plot(x, J(0,x), label ="m = 0" )
+plot(x, J(1,x), label ="m = 1")
+plot(x, J(2,x), label ="m = 2")
+legend()
+show()
+
+#wave perameters
+wavelength = 5e-7
+k = 2*pi/wavelength
+
+#density plot parameters
+xmin = ymin = -1e-6
+xmax = ymax = 1e-6
+points = 100
+
+dx = (xmax - xmin)/points
+dy = (ymax - ymin)/points
+
+waves = empty([points, points], float)
+
+for i in range(points):
+    y = ymin + i*dy
+    for j in range(points):
+        x = xmin +j*dx
+        r = (x**2+y**2)**.5
+        if r == 0:
+            waves[i,j] = .25 #1/2 squared
+        else:
+            waves[i,j] = (J(1, k*r)/(k*r))**2
+
+#density plot
+imshow(waves, vmax = .1, origin = "lower", extent= [xmin, xmax, ymin, ymax])
+colorbar()
+hot()
+title("Wave Diffraction Pattern")
+xlabel("Distance (meters)")
+ylabel("Distance (meters)")
+show()
+
+

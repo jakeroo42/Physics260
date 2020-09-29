@@ -1,0 +1,90 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Sat Feb  9 13:56:27 2019
+
+@author: jakerabinowitz
+"""
+
+#Pset 3 question 3
+from pylab import plot, xlabel, ylabel, show, xlim, title, hot, jet
+from numpy import cos, sin, pi, loadtxt, exp, e
+#integration perameters
+N1 = 1000
+N2 = 2000
+w1 = 0.0
+w2 = 1.0
+h1 = (w2-w1)/N1
+h2 = (w2-w1)/N2
+I1 = 0
+I2 = 0
+
+#constants for part c
+h = 1.0545e-34
+c = 3e8
+k = 1.38e-23
+actualSB = 5.67e-8
+
+#constants for part d
+f1 = 400e12
+f2 = 790e12
+partdW1 = 2*pi*f1
+partdW2 = 2*pi*f2
+partdh = (partdW2-partdW1)/N1
+T = 2800
+
+
+
+def I(w):
+    return (h/((4*pi)*c**2))*(w**3)/((exp(h*w)/(k*T))-1)
+
+def f(x):
+    if x == 0:
+        return 0
+    else:
+        return(x**3)/(exp(x)-1)
+        
+def integrand(z):
+    if z == 1:
+        return 0;
+    else:
+        return f(1+z/(1-z))/(1-z)**2
+
+def D(w):
+    return w**3/((exp((h*w)/(k*T))-1))
+    
+
+#f(x) with 1000 slices
+for i in range(1, N1+1):
+    I1 +=.5*h1*(integrand(w1 + (i-1)*h1)+ integrand(w1+i*h1))
+
+#(f) with 2000 slices
+for j in range(1, N2+1):
+    I2 +=.5*h2*(integrand(w1 + (j-1)*h2)+ integrand(w1+j*h2))
+
+print()
+#printing the error: error = 4.144186e-8
+print("The error between 1000 slices and 2000 slices is ", (1/3)*(I2-I1))
+
+#part c, using my integral to calculate the SB constant
+
+sigma = ((k**4)/(4*pi**2*c**2*h**3))*I2
+
+print("My calculated Stefan-Boltzmann constnat is", sigma)
+#Percent error between my Stephan-Boltzmann Constant and the Actual (3.9%)
+print("The percent deviation between actual and experimental SB constatns is ", (abs(actualSB - sigma)/sigma)*100)
+
+#Part D
+integralD = 0
+for x in range(1, N2+1):
+    integralD +=.5*partdh*(D(partdW1 + (x-1)*partdh)+ D(partdW2+x*partdh))
+    
+integralD = integralD*h/(4*pi**2*c**2*T**4*sigma)
+    
+print(integralD)
+
+
+
+
+
+

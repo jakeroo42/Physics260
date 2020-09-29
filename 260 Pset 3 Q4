@@ -1,0 +1,58 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Feb 11 14:02:21 2019
+
+@author: jakerabinowitz
+"""
+
+#260 Pset 4 Q4
+
+from pylab import plot, xlabel, ylabel, show, xlim, title, hot, jet, legend
+from numpy import cos, sin, pi, loadtxt, exp, e, linspace
+
+#constants    
+N = 100
+L = 1
+x1,x2 = -L/2, L/2
+y1, y2 = -L/2, L/2
+dx = (x2-x1)/N
+dy = (y2-y1)/N
+
+G = 1
+M = 1
+sigma = 1
+
+#overall function f(x, y, z)
+def f(x, y, z):
+    return 1/(x**2+y**2+z**2)**1.5
+    
+#return the value of the integral over x
+def h(y, z):
+    Ix = 0
+    for k in range(0,N+1):
+        A = .5*dx*(f(x1+(k-1)*dx, y, z)+f(x1+k*dx, y, z))
+        Ix+= A
+    return Ix
+
+#integrates function g(z) using trapazoid rule
+def g(z):
+    Ig = 0
+    for k in range(1, N+1):
+        Ig +=.5*dy*(h(y1 + (k-1)*dy, z)+ h(y1+k*dy, z))
+    return Ig*z*sigma*G
+
+#makes values from z from 0,1 with N spots. The Homework says use 100 but look at the comment below for explination
+z = linspace(0,1,100)
+title("Strength of z-Compontent of Gravity vs Distance")
+xlabel("Distance")
+ylabel("z-component of gravity (Newtons)")
+plot(z, g(z), label = "z values")
+legend()
+show()
+
+"""
+If you plug in 100 points, the graph drastically breaks. When you plug in only 10 points, 
+the graph seems to be choppy but follow a good trend. If you use 1000 points the graph really breaks down and
+does not follow the trend it should, 1/x^3/2.
+"""

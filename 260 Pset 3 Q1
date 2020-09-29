@@ -1,0 +1,47 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Feb  8 16:07:24 2019
+
+@author: jakerabinowitz
+"""
+
+#Pset 3 question 1
+from pylab import plot, xlabel, ylabel, show, xlim, title, legend
+from numpy import cos, sin, pi, loadtxt
+
+#creating lists for velocity and position
+velocity = [0.0]
+position =[0.0]
+
+mass = 1.3
+
+#load in the data
+forcesdata = loadtxt("forces.txt", float)
+time = forcesdata[:,0]
+force = forcesdata[:,1]
+acceleration = forcesdata[:,1]/mass
+
+#velocity integration loop
+V = 0
+for k in range(1, len(time)):
+    area = velocity[k-1]+.5*(time[k]-time[k-1])*(acceleration[k] + acceleration[k-1])
+    velocity.append(area)
+
+#position integration loop
+X = 0
+for k in range(1, len(time)):
+    area = position[k-1]+.5*(time[k]-time[k-1])*(velocity[k] + velocity[k-1])
+    position.append(area)
+
+
+#making the graph
+plot(time, position, 'b', label="position(t)")
+plot(time, velocity, 'black', label="velocity(t)")
+plot(time, acceleration, 'g', label="acceleration(t)")
+plot(time, force, 'r', label="force(t)")
+xlabel("Time (seconds)")
+ylabel("Net Force (Newtons)")
+title("Force vs Time")
+legend()
+show()
