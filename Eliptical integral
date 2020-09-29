@@ -1,0 +1,21 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Feb  8 11:47:39 2019
+
+@author: jakerabinowitz
+"""
+
+from numpy import sqrt, linspace
+from pylab import plot, show, legend
+
+def f(z):
+    return 1/sqrt(1-z**4)
+
+def g(z):
+    return .5/sqrt(1-z)
+
+x = linspace(0, 0.999, 100)
+
+plot(x, f(x))
+plot(x, g(x))

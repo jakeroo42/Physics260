@@ -1,0 +1,112 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Apr 24 11:14:46 2019
+
+@author: jakerabinowitz
+"""
+
+from math import log 
+from numpy import linspace, zeros, sqrt
+from pylab import plot, show, xlabel, ylabel, title
+
+#reaction parameters and constants 
+muknotNH3 = -16.48                                  #kJ/mol
+muknotN2 = 0
+muknotH2 = 0
+R = 8.314                                           #J/mol/K
+T = 450                                             #K
+Pknot = 1                                           #atm
+lam = linspace(-1/3, 1/2, 500)                      #lambda space
+Ptot = 1                                            #atm
+Glist = []
+
+#values for differentiating Gibbs values 
+dgbydlam = zeros(len(lam), float)
+dgbydlamanalytical = zeros(len(lam), float)
+h = 1e-5
+
+#Constants for golden ratio search
+z = (1 + sqrt(5))/2    # golden ratio
+accuracy = 1e-8        # desired accuracy
+x1 = -.2               # left bracket
+x4 = .4                # right bracket
+
+x2 = x4 - (x4 - x1)/z  # interior point
+x3 = x1 + (x4 - x1)/z  # interior point
+
+
+#define Gibbs free energy function 
+def G(lam):
+    if lam >= 1/2:          #avoid ln( x <= 0 ) error
+        NH3term = 0
+    else:
+        NH3term = (1-2*lam) * (muknotNH3 + R*T*log((1-2*lam)*Ptot/(3+2*lam)/Pknot))
+        
+    N2term = (1+lam) * (muknotN2 + R*T*log((1+lam)*Ptot/(3+2*lam)/Pknot))
+    
+    if lam <= -1/3:         #avoid ln( x <= 0 ) error
+        H2term = 0
+    else:
+        H2term = (1+3*lam) * (muknotH2 + R*T*log((1+3*lam)*Ptot/(3+2*lam)/Pknot))
+        
+    return NH3term + N2term + H2term
+
+#create list of gibbs values 
+for i in range(len(lam)):
+    Glist.append(G(lam[i]))
+    
+#calculate dG/dlamda
+for i in range(len(lam)):
+    if i == 1:
+        dgbydlam[i] = (G(lam[i]+h) - G(lam[i]))/h
+    elif i == len(lam):
+        dgbydlam[i] = (G(lam[i]) - G(lam[i]-h))/h
+    else:
+        dgbydlam[i] = (G(lam[i] + h/2) - G(lam[i] - h/2)) / h
+
+#finding minimum of Gibbs using the golden ratio method
+while x4 - x1 > accuracy:
+        
+    if G(x2) < G(x3):
+        x4 = x3
+        x3 = x2
+        x2 = x4 - (x4 - x1)/z
+    else:
+        x1 = x2
+        x2 = x3
+        x3 = x1 + (x4 - x1)/z
+    
+#finding dG/dlam analytically
+def Gderivative(lam):
+    dNH3term = -2 * (muknotNH3 + R*T*log((1-2*lam)*Ptot/(3+2*lam)/Pknot))
+    dH2term = 3 * (muknotH2 + R*T*log((1+3*lam)*Ptot/(3+2*lam)/Pknot))
+    dN2term = muknotN2 + R*T*log((1+lam)*Ptot/(3+2*lam)/Pknot)
+    return dNH3term + dH2term +dN2term 
+
+#for i in range(len(lam)):
+    #dgbydlamanalytical[i] = Gderivative(lam[i])
+       
+    
+    
+    
+    
+
+
+#write lambda as a function temperature 
+    
+#plot Gibbs energy profile
+plot(lam, Glist)
+ylabel('Gibbs Free Energy')
+xlabel('Reaction extent (lambda)')
+title("Gibbs energy profile")
+show()
+
+print("Golden ratio minimum occurs when lambda = ",(x1 + x4)/2)
+
+#plot dG/dlam to inspect where the zero occurs 
+plot(lam, dgbydlam)
+xlabel('lamda')
+ylabel('dG/dlambda')
+title('Derivative of Gibbs profile')
+show()

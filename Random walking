@@ -1,0 +1,33 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Apr 12 11:35:47 2019
+
+@author: jakerabinowitz
+"""
+
+from random import random
+
+
+N = 100    #number of steps
+M = 100000   #number of simulations
+
+pos = []
+
+for i in range(M):
+    xf = 0
+    for n in range (N):
+        randomnum = random()
+        if randomnum > .5:
+            xf +=1 
+        else:
+            xf -=1
+
+    pos.append(xf)
+
+#print(pos)
+
+avgpos = sum(pos)/M
+
+print("average after", M, "trials = ", avgpos)
+    

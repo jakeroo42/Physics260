@@ -1,0 +1,39 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Jan 23 11:09:32 2019
+
+@author: jakerabinowitz
+"""
+
+from numpy import array
+R = 1.097e7
+h = 6.64e10-34
+c = 3e8
+visableList = []
+frequencies = (5, float) #array created for frequencies
+energy = (5, float) # array created for energies 
+
+
+
+
+
+for n in[1,2,3]:
+    for m in range(n+1, n+7):#want it to go to 6 but need to put 7 bc its not inlcusive
+        wavelength = 1/(R*(1/n**2 - 1/m**2))
+        print("n = ", n, "m = ",m , "wavelenth = ", wavelength)
+        
+        
+        if wavelength >= 390e-9 and wavelength <= 700e-9:
+            visableList.append(wavelength)
+            
+    visableArray = array(visableList, float)       
+            
+        
+        
+print(visableList)
+print("this is the array" , visableArray)
+print("Average of visable wavelengths = :", sum(visableList)/len(visableList))
+
+
+       

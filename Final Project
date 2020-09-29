@@ -1,0 +1,161 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Apr 29 12:40:36 2019
+
+@author: jakerabinowitz
+"""
+
+from math import log
+from numpy import linspace, zeros, sqrt
+from pylab import plot, show, xlabel, ylabel, title, xlim, grid, legend
+
+#reaction parameters and constants 
+R = 8.314/1000                                      #kJ/molK
+                                             #K
+Pknot = 1                                           #atm
+lam = linspace(-1/3, 1/2, 500)                      #lambda space
+Ptot = 1                                            #atm
+G300list = []                                          #empty list for Gibb's values
+G425list = []
+G500list = []
+
+#defining entropies and enthalpies of formation 
+HH2 = 0                     #kJ/mol
+SH2 = 131                   #J/molK
+muknotH2 = HH2 - T*SH2/1000 #kJ/mol
+
+HN2 = 0                     #kJ/mol
+SN2 = 192                   #J/molK
+muknotN2 = HN2 - T*SN2/1000 #kJ/mol
+
+HNH3 = -46                  #kJ/mol
+SNH3 = 193                  #J/molK
+muknotNH3 = HNH3 - T*SNH3/1000 #kJ/mol
+
+#values for differentiating Gibbs values 
+dgbydlam = zeros(len(lam), float)
+dgbydlamanalytical = zeros(len(lam), float)
+h = 1e-5
+
+#Constants for golden ratio search
+z = (1 + sqrt(5))/2    # golden ratio
+accuracy = 1e-8        # desired accuracy
+x1 = -.3               # left bracket
+x4 = .5                # right bracket
+
+x2 = x4 - (x4 - x1)/z  # interior point
+x3 = x1 + (x4 - x1)/z  # interior point
+
+
+#define Gibbs free energy function 
+def G(lam):
+    if lam >= 1/2:          #avoid ln( x <= 0 ) error
+        NH3term = 0
+    else:
+        NH3term = (1-2*lam) * (muknotNH3 + R*T*log((1-2*lam)*Ptot/(3+2*lam)/Pknot))
+        
+    N2term = (1+lam) * (muknotN2 + R*T*log((1+lam)*Ptot/(3+2*lam)/Pknot))
+    
+    if lam <= -1/3:         #avoid ln( x <= 0 ) error
+        H2term = 0
+    else:
+        H2term = (1+3*lam) * (muknotH2 + R*T*log((1+3*lam)*Ptot/(3+2*lam)/Pknot))
+        
+    return NH3term + N2term + H2term
+
+#define the equilibrium constant in terms of the reaction extent that produces a Gibb's minimum
+def Kp(lam):
+    pN2 = (1+lam)/(3+2*lam)
+    pH2 = (1+3*lam)/(3+2*lam)
+    pNH3 = (1-2*lam)/(3+2*lam)
+    return pN2 * pH2**3 / pNH3**2
+
+#create list of gibbs values 
+for T in (300, 425, 500):
+    
+
+    for i in range(len(lam)):
+        if T == 300:
+            G300list.append(G(lam[i]))
+        if T == 425:
+            G425list.append(G(lam[i]))
+        if T == 500:
+            G500list.append(G(lam[i]))
+    
+#calculate dG/dlamda numerically
+for i in range(len(lam)):
+    if i == 1:
+        dgbydlam[i] = (G(lam[i]+h) - G(lam[i]))/h           #left handed difference
+    elif i == len(lam):
+        dgbydlam[i] = (G(lam[i]) - G(lam[i]-h))/h           #right handed difference
+    else:
+        dgbydlam[i] = (G(lam[i] + h/2) - G(lam[i] - h/2)) / h #central difference
+
+#finding minimum of Gibbs using the golden ratio method
+while x4 - x1 > accuracy:
+        
+    if G(x2) < G(x3):
+        x4 = x3
+        x3 = x2
+        x2 = x4 - (x4 - x1)/z
+    else:
+        x1 = x2
+        x2 = x3
+        x3 = x1 + (x4 - x1)/z
+    
+#finding dG/dlam analytically
+def Gderivative(lam):
+    if lam == 1/2:
+        dNH3term = -2*muknotNH3  #avoid ln(0) error
+    else:
+        dNH3term = -2 * (muknotNH3 + R*T*log((1-2*lam)*Ptot/(3+2*lam)/Pknot))
+    if lam == -1/3:
+        dH2term = 3*muknotH2
+    else:
+        dH2term = 3 * (muknotH2 + R*T*log((1+3*lam)*Ptot/(3+2*lam)/Pknot))
+    dN2term = muknotN2 + R*T*log((1+lam)*Ptot/(3+2*lam)/Pknot)
+    
+    return dNH3term + dH2term +dN2term 
+
+for i in range(len(lam)):
+    dgbydlamanalytical[i] = Gderivative(lam[i])
+
+
+#plot Gibbs energy profile
+plot(lam, G300list, 'r', label = "300K")
+plot(lam, G425list, 'g', label = "425K")
+plot(lam, G500list, 'b', label = "500K")
+
+grid()
+ylabel('Gibbs Free Energy (kJ)')
+xlabel('Reaction extent ($\lambda$)')
+title("Gibbs Energy Profile at 500 K")
+legend()
+show()
+
+
+print("Golden ratio minimum occurs when lambda = ",(x1 + x4)/2)
+"""
+#plot dG/dlam to inspect where the zero occurs 
+plot(lam, dgbydlam, 'lime')
+xlabel('$\lambda$')
+grid()
+xlim(right  = 1/2 -.01)
+xlim(left = -1/3 + 0.01)
+ylabel('dG/d$\lambda$')
+title('Numerical Derivative of Gibbs Profile')
+show()
+
+
+plot(lam, dgbydlamanalytical, 'c')
+ylabel("dG/d$\lambda$")
+grid()
+xlim(right  = 1/2 -.01)
+xlim(left = -1/3 + 0.01)
+xlabel("$\lambda$")
+title("Anaytical Derivative of Gibbs Profile")
+show()
+
+print("the equilibrium constant Kp at",T,"K is ", Kp((x1 + x4)/2))
+"""

@@ -1,0 +1,59 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Mar 15 16:14:38 2019
+
+@author: jakerabinowitz
+"""
+
+from numpy import cos, sin, pi 
+from pylab import plot, show, xlabel, ylabel, legend, array, arange
+
+# this program solves dfdt = f(r,t)
+def f(r,t):
+    theta = r[0]
+    omega = r[1]
+    ftheta = omega
+    fomega = -g/l*sin(theta)
+    return array([ftheta, fomega], float)
+
+#parameters
+m = 1.0                          # mass of pendulum bob
+g = 1.0                          # gravitational acceleration
+l = 1.0                          # length of pendulum
+theta0 = 0.99*pi                 # initial angle
+omega0 = 0                       # initial angular velocity
+r = array([theta0, omega0])      # initial conditions
+t0 = 0                           # initial time
+tf = 50                          # final time
+N = 1000                         # number of points
+h = (tf - t0)/N                  # step size
+tpoints = arange(t0, tf, h)      # time values
+thetalist = []                   # empty list for theta
+omegalist = []                   # empty list for omega
+
+for t in tpoints:
+    thetalist.append(r[0])       # append theta
+    omegalist.append(r[1])       # append omega
+
+    #4th order Runge Kutta
+    k1 = h*f(r, t)
+    k2 = h*f(r + 0.5*k1, t + 0.5*h)
+    k3 = h*f(r + 0.5*k2, t + 0.5*h)
+    k4 = h*f(r + k3, t + h)
+    r += 1/6*(k1 + 2*k2 + 2*k3 + k4)
+    
+Ekin = 0.5*m*l**2*array(omegalist)**2  # kinetic energy
+Epot = m*g*(1-cos(array(thetalist)))   # potential energy
+Etot = Ekin + Epot                     # total mechanical energy
+
+# plot results
+#plot(tpoints, thetalist, "b-", label="Nonlinear")
+#plot(tpoints, theta0*cos(sqrt(g/l)*tpoints), "r-", label="Linear")
+plot(tpoints, Epot, 'g', label = "Potential Energy")
+plot(tpoints, Ekin, 'r',label = "Kinetic Energy")
+plot(tpoints, Etot, label = "Total Energy")
+xlabel("$t$")
+ylabel(r"$\theta(t)$")
+legend(loc="upper right")
+show()

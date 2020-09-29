@@ -1,0 +1,90 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Apr 11 18:24:04 2019
+
+@author: jakerabinowitz
+"""
+
+from numpy import zeros, max, sqrt, min
+from pylab import imshow, show, colorbar, meshgrid, quiver, title, xlabel, ylabel
+
+# Constants
+L = 101
+M = 101           # Number of grid points on a side
+V = 1.0           # Voltage of the conductor
+Vbox = 0
+target = 1e-4     # Target accuracy in volts
+Lx =  50
+Ly = 10
+DX = zeros([M,M], float)    # empty matrix for gradient
+DY = zeros([M,M], float)    # empty matrix for gradient
+a = L/M
+
+# Arrays for potential
+phi = zeros([M, M], float)
+phi[int(M/2-Ly/2):int(M/2+Ly/2) + 1, int(M/2-Lx/2):int(M/2+Lx/2) +1] = V
+phiprime = zeros([M, M], float)
+
+
+# Main loop
+delta = 1.0
+while delta > target:
+    
+    # Calculate new values of the potential
+    for i in range(M):
+        for j in range(M):
+            
+            # Apply boundary condition
+            if i == 0 or i == M-1 or j == 0 or j == M-1:
+                phiprime[i,j] = 0
+                
+            elif i >= int(M/2-Ly/2) and i <= int(M/2+Ly/2) and j>= int(M/2-Lx/2) and j<= int(M/2+Lx/2):
+                phiprime[i,j] = phi[i,j]
+            # Relaxation method for Laplace equation
+            else:
+                phiprime[i,j] = (phi[i+1,j] + phi[i-1,j] + phi[i,j+1] + phi[i,j-1])/4
+                
+     # Calculate maximum difference from old values
+    delta = max(abs(phi - phiprime))
+    
+    # Swap the two arrays
+    phi,phiprime = phiprime,phi
+                
+#electric field is gradient of voltage
+#need arrays for DX and DY that are derivatives of phi
+                
+for i in range(M-1):
+    for j in range(M-1):
+        #the electric field is 0 inside the conductor
+        if i <= M/2+Ly/2 and i >= M/2-Ly/2 and j >= M/2-Lx/2 and j<= M/2+Lx/2:
+            DX[i,j] = 0
+            DY[i,j] = 0
+        else:
+            DX[i,j] = - (phi[i, j+1] - phi[i, j-1])/2/a
+            DY[i,j] = - (phi[i+1, j] - phi[i-1, j])/2/a
+
+
+
+#plotting the results
+imshow(phi, extent=[0, M, 0,M], cmap="plasma") 
+X,Y = meshgrid(range(M), range(M))
+stride = 4
+x,y = X[::stride, ::stride], Y[::stride, ::stride]
+dx, dy = DX[::stride,::stride], DY[::stride, ::stride]
+colorbar()
+quiver(x, y, dx, dy)   
+
+#arrow length
+length = sqrt(dx**2 + dy**2)
+
+maxlength = max(length)
+minlength = min(length)
+ratio = maxlength/minlength
+ 
+xlabel("x")
+ylabel("y")
+title("Condunctor with magnetic field lines")   
+show()
+
+print(ratio)

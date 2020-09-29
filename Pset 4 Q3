@@ -1,0 +1,79 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Feb 21 19:48:09 2019
+
+@author: jakerabinowitz
+"""
+
+
+from numpy import cos, sin, e, sqrt, empty, zeros, linspace, array 
+from pylab import loadtxt, plot, show, legend, xlabel, ylabel, title
+from solvematrix import solvematrix
+
+#read in data
+data1 = loadtxt("data.txt", float)
+
+x = data1[:,0]
+y = data1[:,1]
+
+N = len(x) #number of data points
+degree = 10
+
+#Matrix A for equation in the for Av=b
+A = zeros([degree+1, degree+1], float)
+#Vector b for equation in the for Av=b
+b = zeros([degree+1], float)
+
+#filling the matrix A
+for i in range(degree+1):
+    b[i] = sum(y*x**i)
+    for j in range(degree+1):
+        A[i,j] = sum(x**(i+j))
+
+#Augmented vector v
+v = solvematrix(A, b)
+
+points = 100
+xmin = min(x)
+xmax = max(x)
+xpol = linspace(xmin, xmax, points)
+
+#creating the array that has the polynomial
+ypol = zeros(points, float)
+
+for n in range(degree+1):
+    ypol += v[n]*xpol**n
+
+#Calculating erms
+yfit = zeros(N, float)
+for i in range(degree+1):
+     yfit += v[i]*(x**i)
+
+ermsarray = zeros(N, float)
+ 
+for i in range(N):         
+    ermsarray[i] = (y[i] - yfit[i])**2
+
+sumerms = sum(ermsarray)
+erms = sqrt(sumerms/N)
+
+
+#loop to write out what the fit polynomial looks like
+s = "Fit to %.3f" %v[0]
+for i in range(1, degree+1):
+    s += "+ %.3f$x^%d$ " %(v[i],i)
+    
+print(s)
+plot(x, y, 'r.', label = "Data")
+plot(xpol, ypol, 'b', label = s)
+xlabel("x-axis")
+ylabel("y-axis")
+title("Data Set 1")
+legend()
+show()
+
+
+
+    
+        

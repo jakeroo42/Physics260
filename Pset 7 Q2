@@ -1,0 +1,87 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Mar 28 22:03:50 2019
+
+@author: jakerabinowitz
+"""
+
+from numpy import sqrt, array
+from pylab import plot, show, legend, xlabel, ylabel, title
+
+def f(r):
+    x = r[0]
+    y = r[1]
+    distance = sqrt(x**2 + y**2)
+    fx = -G*M*(x/distance**3)
+    fy = -G*M*(y/distance**3)
+    
+    return array([fx, fy], float)
+
+def KE(v):
+    return .5*m*sqrt(v[0]**2 + v[1]**2)**2
+def PE(r):
+    return -G*m*M/sqrt(r[0]**2 + r[1]**2)
+
+#Constants
+G = 6.67408e-11 #gravitational constant 
+M = 5.972e24 #mass of earth kg
+m = 7.348e22 #mass of moon kg
+
+#Initial conditions
+t = 0
+x0 = 3.626e8 #meters
+y0 = 0
+vx0 = 0
+vy0 = 1.077e3 #meters/second
+
+r = array([x0, y0], float)
+v = array([vx0, vy0], float)
+
+#Verlet parameters
+dt = 3600 #seconds
+
+#data lists
+tvalues = []
+xvalues = []
+yvalues = []
+Uvalues = [] #potential energy list
+KEvalues = []#kinetic energy
+Etotvalues = [] #total energy
+
+#Perform a half step
+vmid = v +f(r)*.5*dt
+
+#begining of while loop 
+while t < 20000000:
+    
+    ke = KE(v)
+    pe = PE(r)
+    #saving data in the lists
+    tvalues.append(t)
+    xvalues.append(r[0])
+    yvalues.append(r[1])
+   
+    #energy lists
+    K = ke
+    U = pe
+    KEvalues.append(ke)
+    Uvalues.append(pe)
+    Etotvalues.append(pe + ke)
+    
+    # Verlet algorithm
+    r += vmid*dt
+    v = vmid + f(r)*0.5*dt
+    vmid += f(r)*dt
+    t += dt
+
+#plot(tvalues, Etotvalues, 'r', label= "Total Energy")
+#plot(tvalues, KEvalues, 'g', label = "Kinetic Energy")
+#plot(tvalues, Uvalues, 'b', label ="Potential Energy")
+plot(xvalues, yvalues)
+xlabel("Time")
+ylabel("Energy")
+title("Energy vs Time")
+legend()
+show()
+

@@ -1,0 +1,57 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Apr  3 23:36:58 2019
+
+@author: jakerabinowitz
+"""
+
+from numpy import array, zeros
+from pylab import plot, show, grid, xlabel, ylabel, title
+
+
+#box constants
+w = 50
+volume = w**2
+
+
+pressure1 = [0, .03241, 0.07857, 0.13554, 0.18162]
+temp = [0.1, 1, 2, 3, 4]
+
+
+numparticles = [20,80,110, 200]
+density = array([20,80,110, 200], float)/volume
+pressure2 = [.007839, .03241, .051476, .209565]
+
+
+"""
+plot(temp, pressure1, 'ro-')
+title("Pressure as a Function of Temperature")
+xlabel("Temperature")
+ylabel("Pressure")
+grid()
+show()
+
+
+plot(numparticles, pressure2, 'go-')
+title("Pressure as a Function of Number of Particles")
+xlabel("Number of Particles")
+ylabel("Pressure")
+grid()
+show()
+"""
+plot(density, pressure2, 'bo-')
+title("Pressure as a Function of Number of Particles")
+xlabel("Number of Particles")
+ylabel("Pressure")
+grid()
+show()
+
+
+
+
+
+
+
+
+

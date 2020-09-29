@@ -1,0 +1,63 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Mar 15 11:07:09 2019
+
+@author: jakerabinowitz
+"""
+
+from numpy import sin, linspace, pi, asarray, cos
+from pylab import show, plot, array
+
+def f(r, t):
+    theta = r[0]
+    omega = r[1]
+    ftheta = omega
+    fomega = (-g/l)*sin(theta)
+    return array([ftheta, fomega], float)
+
+theta = 0.5*pi
+omega = 0
+r = array([theta, omega], float)
+m = l = g = 1
+t0 = 0
+tf = 50
+N = 1000
+h = (tf-t0)/N
+
+
+tvalues = linspace(t0, tf, N)
+thetavalues = []
+omegavalues = []
+
+for t in tvalues:
+    thetavalues.append(r[0])
+    omegavalues.append(r[1])
+    #4th order range-kutta algorithm
+    k1 = h*f(r, t)
+    k2 = h*f(r+ 0.5*k1, t + 0.5*h)
+    k3 = h*f(r+ 0.5*k2, t + 0.5*h)
+    k4 = h*f(r + k3, t + h)
+    r += (k1 + 2*k2 + 2*k3 + k4)/6
+    
+I = m*l**2
+
+omegavalues = asarray(omegavalues)
+thetavaleus = asarray(thetavalues)
+krot = 1/2*I*omegavalues**2
+u = m*g*l*(1-cos(thetavalues))
+
+Etot = krot + u
+
+plot(tvalues, thetavalues, 'b')
+plot(tvalues, omegavalues, 'r')
+#plot(tvalues, krot, 'g')
+#plot(tvalues, u, 'r')
+plot(tvalues, Etot, 'g')
+show
+    
+    
+    
+    
+    
+    

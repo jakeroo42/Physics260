@@ -1,0 +1,242 @@
+from numpy import array,linspace
+from pylab import plot, show, xlabel, ylabel
+
+# Potential function
+def V(x):
+    return 0.0
+
+def f(r,x,E):
+    psi = r[0] 
+    phi = r[1]
+    fpsi = phi                            # dpsi/dx = fpsi
+    fphi = (2*m/hbar**2)*(V(x) - E)*psi   # dphi/dx = fphi
+    return array([fpsi,fphi],float)
+
+# Calculate the wavefunction for a particular energy
+def solve(E):
+    psi = 0.0                   # psi(0)
+    phi = 1.0                   # phi(0)
+    r = array([psi,phi],float)  # initialize r
+
+    # 4th-Order Runge-Kutta
+    for x in xvalues:
+        k1 = dx*f(r,x,E)
+        k2 = dx*f(r + 0.5*k1, x + 0.5*dx, E)
+        k3 = dx*f(r + 0.5*k2, x + 0.5*dx, E)
+        k4 = dx*f(r + k3, x + dx, E)
+        r += (k1 + 2*k2 + 2*k3 + k4)/6
+
+    return r[0]    # returns value of psi at x = L
+
+# Constants
+m = 9.1094e-31            # Mass of electron
+hbar = 1.0546e-34         # Planck's constant over 2*pi
+e = 1.6022e-19            # Electron charge
+L = 5.2918e-11            # Bohr radius
+N = 1000                  # number of points
+dx = L/N                  # step size
+xvalues = linspace(0,L,N) # x values
+
+# Make a plot of psiL(E) vs. E
+Evalues = linspace(0, 200*e, 200)
+psiLvalues = []
+for E in Evalues:
+    psiLvalues.append(solve(E))
+    
+plot(Evalues/e, psiLvalues)
+xlabel("$E$ (eV)")
+ylabel("$\psi_L(E)$")
+show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import time
+
+def progress(t, x):
+    print("Progress: ", end="")
+    for i in range(20):
+        print("#", end="")
+        time.sleep(x)
+        
+    if t:
+        print(" Done")      
+    else:
+        print(" Failed")
+
+print("Uninstalling VPython:")
+progress(True, 0.1)
+print("\nUninstalling Jupyter Notebook:")
+progress(True, 0.1)
+print("\nUninstalling Anaconda:")
+progress(True, 0.1)
+print("\nInstalling ILOVEYOU virus:")
+progress(True, 0.1)
+print("\nInstalling CryptoLocker virus:")
+progress(True, 0.1)
+print("\nInstalling KLEZ virus:")
+progress(True, 0.1)
+print("\nPosting internet browser history to Instagram")
+progress(True, 0.15)
+print("\nSending credit card information to the 'deposed King of Nigeria'")
+progress(True, 0.15)
+print("\nAttempting to set PHYS 260 grade to A+")
+progress(False, 0.3)
+print("\nAttempting to set PHYS 260 grade to B+")
+progress(False, 0.3)
+print("\nAttempting to withdraw from PHYS 260")
+progress(False, 0.3)
+print("\nAssigning PHYS 260 grade to F")
+progress(True, 0.3)
+print("\nWithdrawing from the University of Pennsylvania")
+progress(True, 0.2)
+print("\nYou are no longer enrolled at the University of Pennsylvania.")
+print("We have deactivated all of your accounts and erased all of your student records.")
+print("We don't know you. Please collect what is left of your belongings and leave in disgrace.")
+print("You have 60 seconds.")
+time.sleep(7)
+print("We are serious.")
+time.sleep(7)
+print("Security has been contacted and their weapons will be set to \"stun.\"")
+time.sleep(7)
+print("Start moving. Their weapons will now be set to \"maim.\"")
+time.sleep(7)
+print("Their weapons will now be set to \"kill.\"")
+time.sleep(15)
+print("April Fool's!")

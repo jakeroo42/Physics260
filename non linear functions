@@ -1,0 +1,53 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Feb 22 11:13:37 2019
+
+@author: jakerabinowitz
+"""
+
+from numpy import exp, zeros, sqrt, log
+from pylab import plot, show, linspace, xlabel, ylabel, grid
+
+N = 50
+
+f1graph = zeros(N, float)
+    
+def f1(x):
+    return x
+
+def f2(x):
+    return exp(1-x**2)
+
+def f3(x):
+    return sqrt(1-log(x))
+
+def f4(x):
+    return 0.1*(x-2)**2
+
+
+accuracy = 1e-12
+delta = 1.0
+x1 = 1.1
+n = 0
+
+while delta  > accuracy :
+      x2 = f3(x1)
+      delta = abs(x2-x1)
+      x1 = x2
+      n +=1
+
+print("x = ", x2, "Iterations = ", n)
+
+
+x = linspace(-2,2, N)
+#plot(x, f1(x), 'r-')
+#plot(x, f2(x), 'g-')
+plot(x, f3(x), 'b')
+#plot(x, f4(x), 'r-')
+xlabel("x value")
+ylabel("derivative")
+grid()
+show()
+
+

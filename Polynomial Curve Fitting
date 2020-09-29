@@ -1,0 +1,50 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Feb 18 11:12:14 2019
+
+@author: jakerabinowitz
+"""
+
+#Polynomial Curve Fitting
+
+
+from numpy import cos, sin, e, sqrt, empty, zeros, linspace
+from pylab import loadtxt, plot, show
+from solvematrix import solvematrix
+
+data1 = loadtxt("position.txt", float)
+
+x = data1[:,0]
+y = data1[:,1]
+
+N = len(x) #number of data points
+degree = 8
+
+A = zeros([degree+1, degree+1], float)
+v = zeros([degree+1], float)
+
+for i in range(degree+1):
+    v[i] = sum(y*x**i)
+    for j in range(degree+1):
+        A[i,j] = sum(x**(i+j))
+    
+a = solvematrix(A, v)
+
+points = 100
+xmin = min(x)
+xmax = max(x)
+xpol = linspace(xmin, xmax, points)
+ypol = zeros(points, float)
+for n in range(degree+1):
+    ypol += a[n]*xpol**n
+
+print(ypol)
+
+plot(x, y, 'r.')
+plot(xpol, ypol, 'b')
+show()
+
+
+    
+        

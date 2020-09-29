@@ -1,0 +1,44 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Feb  1 11:24:05 2019
+
+@author: jakerabinowitz
+"""
+
+from numpy import exp 
+import time
+
+t1 = time.time()
+N = 10000
+def Eavg(Z):
+    E = 0
+    Eavgsum = 0
+    for n in range(0, N):
+        E = h*w*(n+ 1/2)
+        Eavgsum += E*exp(-b*E)
+        
+    return Eavgsum/Z
+        
+
+def calculateZ():
+    E = 0  
+    Zsum = 0
+    for n in range(0, N):
+        E = h*w*(n + 1/2)
+        Zsum += exp(-b*E)
+        print("z", Zsum)
+    return Zsum
+
+#constants
+h = 1
+w = 1
+b = 1/100
+     
+Z = calculateZ()
+
+print(Eavg(Z))
+
+t2 = time.time()
+print(t2-t1)
+    

@@ -1,0 +1,95 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Mar 19 00:42:02 2019
+
+@author: jakerabinowitz
+"""
+
+from numpy import sin, linspace
+from pylab import plot, show, legend, xlabel, ylabel, grid
+
+#Dif eq of Vout with respect to time
+def f(Vout, t):
+    return (Vin(t) - Vout)/RC 
+
+"""
+#Part a function for Vin with respect to time
+def Vin(t):
+    Vin = 0
+    if int (2*t)%2 == 0:
+        Vin = 1
+    else:
+        Vin = -1
+    return Vin
+
+"""
+
+#Part b function for Vin with respect to time
+def Vin(t):
+    return sin(t) + sin(10*t) + sin(100*t)
+
+
+#Creating the RC list
+RClist = [.01, 0.1, 1]
+
+#range-kutta parameters
+t0 = 0
+tf = 10
+N = 5000
+h = (tf-t0)/N
+
+#initial conditions
+Vout = 0
+tvalues = linspace(t0, tf, N)
+
+#Initialize list to store Vout values for 3 differnt RC values
+Voutvalues = [[],[],[]]
+Vinvalues = []
+
+#for loop to solve differential equation for each RC value
+for i in range(len(RClist)):
+    
+    RC = RClist[i]
+    Vout = 0
+    for t in tvalues:
+        
+        if i ==0:
+            Vinvalues.append(Vin(t))
+        Voutvalues[i].append(Vout)
+        #4th order range-kutta algorithm
+        k1 = h*f(Vout, t)
+        k2 = h*f(Vout+ 0.5*k1, t + 0.5*h)
+        k3 = h*f(Vout+ 0.5*k2, t + 0.5*h)
+        k4 = h*f(Vout + k3, t + h)
+        Vout += (k1 + 2*k2 + 2*k3 + k4)/6
+
+#Plotting the data
+plot(tvalues, Voutvalues[0], 'r-', label="RC = 0.01")
+plot(tvalues, Voutvalues[1], 'g', label="RC = 0.1")
+plot(tvalues, Voutvalues[2], 'b', label="RC = 1")
+xlabel("$Time (s)$")
+ylabel("$Current$ (Amps)")
+legend()
+grid()
+show() 
+
+"""
+Discussion: For the part a
+
+Using the step function, the current here is oscillating very rapidly,
+looking specifically at RC = 0.01 compared to RC = 1, the smaller the RC value,
+the greater the "sharpness" of the oscillation.
+
+For part b
+
+Using the function involving sin for Vin(t), the current still oscillates, however
+the oscillations follow a sinusoidal trend aswell as oscillate up and down rapidly.
+Additionaly, the data is a lot more condensed so there are many more oscillations
+pers second than in the step function in part a.
+
+"""
+    
+    
+    
+    

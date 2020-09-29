@@ -1,0 +1,37 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Mar 19 17:21:13 2019
+
+@author: jakerabinowitz
+"""
+from numpy import array, arange, sqrt
+from pylab import plot, linspace, show
+
+# Lennard-Jones potential
+def f(x):
+    return (sigma/x)**12 - (sigma/x)**6
+
+sigma = 1.0            # in nanometers
+z = (1 + sqrt(5))/2    # golden ratio
+accuracy = 1e-8        # desired accuracy
+x1 = sigma/10          # left bracket
+x4 = sigma*10          # right bracket
+x2 = x4 - (x4 - x1)/z  # interior point
+x3 = x1 + (x4 - x1)/z  # interior point
+
+# Main loop of search
+while x4 - x1 > accuracy:
+        
+    if f(x2) < f(x3):
+        x4 = x3
+        x3 = x2
+        x2 = x4 - (x4 - x1)/z
+    else:
+        x1 = x2
+        x2 = x3
+        x3 = x1 + (x4 - x1)/z
+        
+# Output results
+print("Golden ratio minimum = ",(x1 + x4)/2,"nm")
+print("Exact value = ", 2**(1/6)*sigma,"nm")

@@ -1,0 +1,80 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Mar 19 17:38:56 2019
+
+@author: jakerabinowitz
+"""
+
+from numpy import sqrt, exp, pi
+from pylab import plot, linspace, show, grid, xlabel, ylabel, title 
+
+#integrating function
+def f(x):
+    return (15/pi**4)*(x**3)/(exp(x)-1)
+        
+#Eta function of T
+def eta(T):
+    #integration parameters
+    N = 1000                
+    wavelength1 = 390e-9
+    wavelength2 = 750e-9
+    lowerbound = h*c/(wavelength2*kb*T)
+    upperbound = h*c/(wavelength1*kb*T)
+    dx = (upperbound-lowerbound)/N
+    I = 0
+    #for loop to perform integration
+    for i in range(1, N+1):
+        I +=.5*dx*(f(lowerbound + (i-1)*dx)+ f(lowerbound+i*dx))
+    return I
+
+#Physical constants
+kb = 1.3807e-23
+c = 2.99792458e8
+h = 6.62607004e-34
+
+#Golden Ratio Search
+z = (1 + sqrt(5))/2    
+accuracy = 1      
+x1 = 300          
+x4 = 10000       
+x2 = x4 - (x4 - x1)/z  
+x3 = x1 + (x4 - x1)/z  
+
+while x4 - x1 > accuracy:
+        
+    if -eta(x2) < -eta(x3):
+        x4 = x3
+        x3 = x2
+        x2 = x4 - (x4 - x1)/z
+    else:
+        x1 = x2
+        x2 = x3
+        x3 = x1 + (x4 - x1)/z
+
+#printing the temp with the highest eta
+besttemp = (x4+x1)/2
+print("Most effecient temperature = ", besttemp)
+
+#printing eta
+maxefficiency = eta(besttemp)
+print("eta effeciency = ", maxefficiency)
+
+#plotting the data
+tvalues = linspace(300, 10000, 1000)
+plot(tvalues, eta(tvalues), 'c')
+title("Temperature of Light Filament vs Efficiency")
+xlabel("$Temperature (K)$")
+ylabel("$Eta$")
+grid()
+show()
+
+"""
+Discussion:
+    
+The temperature for the max effiency of 45% would be around 6928K, 
+which is over 12,010 degrees fahrenheit. This is not practical because
+the melting point of tungstun is only 3,695K (6,192F).
+
+"""
+

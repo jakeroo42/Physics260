@@ -1,0 +1,17 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Sun Feb 10 20:48:26 2019
+
+@author: jakerabinowitz
+"""
+
+from pylab import plot, xlabel, ylabel, show, xlim, title, hot, jet, legend, linspace
+from numpy import cos, sin, pi, loadtxt
+
+x = linspace(0,20, 10)
+y = linspace(0,20, 10)
+
+print(x)
+plot(x, y, 'g')
+show()

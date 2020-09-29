@@ -1,0 +1,47 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Mar 15 16:13:13 2019
+
+@author: jakerabinowitz
+"""
+
+from numpy import array, arange
+from pylab import plot, show, legend, xlabel, ylabel
+
+# this program solves dr/dt = f(r,t)
+def f(r,t):
+    x = r[0]
+    y = r[1]
+    fx = alpha*x - beta*x*y
+    fy = gamma*x*y - delta*y
+    return array([fx, fy], float)
+
+# Lotka-Volterra parameters
+alpha = 1                     # growth rate of rabbits
+beta = 0.5                    # rate at which foxes kill rabbits
+gamma = beta                  # rate at which fox population increases
+delta = 2                     # death rate of foxes
+
+r = array([5.0, 2.0], float)  # initial value
+t0 = 0                        # initial time
+tf = 30                       # final time
+N = 1000                      # number of points
+h = (tf - t0)/N               # step size
+tpoints = arange(t0, tf, h)   # array of time values
+xlist = []                    # empty lists for solution
+ylist = []                    # empty list for solution
+
+for t in tpoints:
+    xlist.append(r[0])
+    ylist.append(r[1])
+    k1 = h*f(r, t)
+    k2 = h*f(r + 0.5*k1, t + 0.5*h)
+    k3 = h*f(r + 0.5*k2, t + 0.5*h)
+    k4 = h*f(r + k3, t + h)
+    r += 1/6*(k1 + 2*k2 + 2*k3 + k4)
+
+plot(tpoints, xlist, "b", label="Rabbits")
+plot(tpoints, ylist, "r", label="Foxes")
+legend()
+show()

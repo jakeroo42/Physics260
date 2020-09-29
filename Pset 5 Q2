@@ -1,0 +1,46 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Feb 25 19:19:19 2019
+
+@author: jakerabinowitz
+"""
+
+#Pset 5 Q2
+
+from pylab import show, plot, grid, linspace, legend
+from numpy import array 
+
+#polynomial
+def p(x):
+    return 924*x**6-2772*x**5+3150*x**4-1680*x**3+420*x**2-42*x+1
+
+def pprime(x):
+    return 5544*x**5-13860*x**4+12600*x**3-5040*x**2+840*x-42
+#number of points
+N = 100
+
+#newtons method loops and parameters
+accuracy = 1e-10
+
+#x1 is an array of guesses
+x1 = array([0.1, 0.2, 0.3, 0.6, 0.8, 0.9])
+x2list = []
+
+for i in x1:
+    delta = 1
+    while delta > accuracy:
+        x2 = i - p(i)/pprime(i)
+        delta = abs(x2-i)
+        i = x2
+        
+    x2list.append(x2)
+        
+print("The 6 roots are", x2list)
+
+x = linspace(0, 1, N)
+plot(x, p(x), 'g', label = "p(x)")
+plot(x, pprime(x), 'b', label = "pprime(x)")
+grid()
+legend()
+show()

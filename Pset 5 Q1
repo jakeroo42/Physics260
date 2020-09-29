@@ -1,0 +1,48 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Feb 25 18:30:40 2019
+
+@author: jakerabinowitz
+"""
+
+#Pset 5 Q1
+from numpy import exp
+from pylab import plot, show, grid, linspace 
+
+#function 
+def f(x):
+    return 5*(1-exp(-x))
+
+#constants
+h = 6.62607004e-34
+k= 1.38064852e-23
+c = 2.99792458e8
+N = 1000
+wavelength = 502e-9
+
+#relaxation method parameters
+accuracy = 10e-6
+delta = 1.0
+x1 = 5
+n = 0
+
+while delta  > accuracy :
+      x2 = f(x1)
+      delta = abs(x2-x1)
+      x1 = x2
+      n +=1
+
+print("The root is ", x2, "Iterations = ", n)
+
+#Temperature equations
+T = (h*c)/(wavelength*k*x2)
+print("Surface temperature of the sun is", int(T), "Kelvin")
+
+"""
+#part a
+x = linspace(-10, 10, N)
+plot(x, f(x))
+grid()
+show()
+"""

@@ -1,0 +1,41 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Feb  8 11:07:30 2019
+
+@author: jakerabinowitz
+"""
+import time
+
+t1 = time.time()
+
+def f(x,y):
+    return x**2 + y**2
+
+def F(y):
+    #trapazoid rule over x holding y constant
+    Ix = 0
+    for k in range(0,N+1):
+        A = .5*dx*(f(x1+(k-1)*dx, y)+f(x1+k*dx, y))
+        Ix+= A
+    return Ix
+
+
+#Integration Parameters
+N =1000
+
+x1,x2 = -1, 1
+y1, y2 = -1, 1
+dx = (x2-x1)/N
+dy = (y2-y1)/N
+
+#trapazoid rule over y 
+Iy = 0
+for j in range(0,N+1):
+        A = .5*dy*(F(y1+(j-1)*dy)+F(y1+j*dy))
+        Iy+= A
+        
+t2 = time.time()        
+
+print("Integral = ", Iy)
+print("Time = ", t2-t1)

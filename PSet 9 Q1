@@ -1,0 +1,145 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Apr 15 00:06:52 2019
+
+@author: jakerabinowitz
+"""
+
+from numpy import array,linspace, arange, sqrt, pi, exp
+from pylab import plot, show, xlabel, ylabel
+from math import factorial
+
+#actual answer to energy level (just for checking)
+def energy(n):
+    return (n+0.5)*hbar*w/e
+
+# Potential function
+def V(x):
+    return 0.5*k*x**2
+
+def f(r,x,E):
+    psi = r[0] 
+    phi = r[1]
+    fpsi = phi                            # dpsi/dx = fpsi
+    fphi = (2*m/hbar**2)*(V(x) - E)*psi   # dphi/dx = fphi
+    return array([fpsi,fphi],float)
+
+# Calculate the wavefunction for a particular energy
+def solve(E):
+    psi = 0.0                   # psi(0)
+    phi = 1.0                   # phi(0)
+    r = array([psi,phi],float)  # initialize r
+    psivalues = []              #initialize psi list
+    # 4th-Order Runge-Kutta
+    for x in xvalues:
+        psivalues.append(r[0])
+        k1 = dx*f(r,x,E)
+        k2 = dx*f(r + 0.5*k1, x + 0.5*dx, E)
+        k3 = dx*f(r + 0.5*k2, x + 0.5*dx, E)
+        k4 = dx*f(r + k3, x + dx, E)
+        r += (k1 + 2*k2 + 2*k3 + k4)/6
+        
+    return array(psivalues, float) # return psi values    
+
+# determines energy eigenvalue bracketed by E1 and E2 via secant method
+def secant(E1, E2):
+ 
+    target = e/1000
+    
+    while abs(E1 - E2) > target:
+        
+        psi1 = solve(E1)[-1]     #solves for the boundry value of psivalues
+        psi2 = solve(E2)[-1]
+        delta = -psi2*(E2 - E1)/(psi2 - psi1)
+        E1 = E2
+        E2 += delta
+        
+    return E2
+
+# Calculates normalized wavefunction
+def normalize(psivalues):
+    I = 0   #initialize integral
+    
+    #trapazoid method
+    for k in range(len(psivalues)-1):
+        I += 0.5*dx*(psivalues[k]**2 + psivalues[k+1]**2)
+        
+    return psivalues/sqrt(I)
+
+# returns nth hermite polynomial
+def hermite(n,x):
+    if n == 0:
+        return 1
+    elif n == 1:
+        return 2*x
+    else:
+        return 2*x*hermite(n-1,x) - 2*(n-1)*hermite(n-2,x)
+ 
+# analytical values for psi_n
+def psi_analytic(n,x):
+    xi= sqrt(m*w/hbar)*x     #arguement for Hermite polynomial
+    constant = 1/sqrt(2**n*factorial(n))*((m*w)/(pi*hbar))**.25
+    psiA = constant*exp(-xi**2/2)*hermite(n, xi)
+    
+    return psiA
+    
+# calculates the probability of finding the particle between x1 and x2
+def probability(psi, x1, x2):
+    prob = 0   #initialize integral
+    i1 = int((x1 + 10*a)/dx)
+    i2 = int((x2 + 10*a)/dx)
+    #trapazoid method
+    for k in range(i1, i2):
+        prob += 0.5*dx*(psi[k]**2 + psi[k+1]**2)
+ 
+    return prob*200
+    
+# Constants
+w = 4.2e17                #Hz
+m = 9.1094e-31            # Mass of electron
+k = m*w**2                # k in the potential
+hbar = 1.0546e-34         # Planck's constant over 2*pi
+e = 1.6022e-19            # Charge of electron
+a = 1e-11                 # bounds
+N = 1000                  # number of points
+dx = 20*a/N               # step size
+xvalues = arange(-10*a,10*a, dx) # x value
+accuracy = 1e-8*e
+
+#inital guesses for e found in part a
+E = [138.22618898984172*e, 414.6785669704157*e, 691.1309449506928*e]
+
+#initialize xmax array
+xmax = [sqrt(2*138.22618898984172*e/k), sqrt(2*414.6785669704157*e/k), sqrt(2*691.1309449506928*e/k)]
+
+
+#Getting calculated psi values
+psi0 = normalize(solve(E[0]))
+psi1 = normalize(solve(E[1]))
+psi2 = normalize(solve(E[2]))
+
+#Getting analytically calculated psi values
+psiA0 = psi_analytic(0, xvalues)
+psiA1 = psi_analytic(1, xvalues)
+psiA2 = psi_analytic(2, xvalues)
+
+#plotting calculated psi values
+plot(xvalues, psi0, 'r.', markevery = 15)
+plot(xvalues, -psi1, 'g.', markevery = 15)
+plot(xvalues, psi2, 'b.', markevery = 15)
+
+#Plotting analytic psi values
+plot(xvalues, psiA0, 'r-')
+plot(xvalues, psiA1, 'g-')
+plot(xvalues, psiA2, 'b-')
+
+#Printing the probabilities 
+print("Ground state", probability(psi0, xvalues[0], -xmax[0]), "%")
+print("First excited state", probability(psi1, xvalues[0], -xmax[1]), "%")
+print("Second excited state", probability(psi2, xvalues[0], -xmax[2]), "%")
+show()
+
+
+
+ 

@@ -1,0 +1,77 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Mar 19 16:54:07 2019
+
+@author: jakerabinowitz
+"""
+
+from numpy import cos, sin, pi, linspace, arange, array
+from pylab import plot, show, xlabel, ylabel, grid, title
+
+#Function of theta and omega
+def f(r,t):
+    theta = r[0]
+    omega = r[1]
+    ftheta = omega
+    fomega = -g/l*sin(theta)
+    return array([ftheta, fomega], float)
+
+#Pendulum Parameters                        
+g = 1.0                          
+l = 1.0 
+m = 1.0  
+
+#RK method parameters
+t0 = 0                           
+tf = 50                          
+N = 1000                       
+h = (tf - t0)/N  
+ 
+#time value array
+tvalues = arange(t0, tf, h)  
+ 
+#List to store all the initial values of theta                
+theta0list = linspace(0.01*pi, 0.99*pi, 100)
+periodlist = []
+
+#for loop to loop through all initial values of theta 
+for theta0 in theta0list:
+    #initial conditions array, starts from rest so omega = 0
+    r = array([theta0, 0.0], float)    
+    #initialize cross and period
+    cross = 0
+    period = []
+    for t in tvalues:
+     
+        theta1 = r[0]
+    
+        #4th order Runge Kutta
+        k1 = h*f(r, t)
+        k2 = h*f(r + 0.5*k1, t + 0.5*h)
+        k3 = h*f(r + 0.5*k2, t + 0.5*h)
+        k4 = h*f(r + k3, t + h)
+        r += 1/6*(k1 + 2*k2 + 2*k3 + k4)
+        
+        theta2 = r[0]
+        
+        #determine if pendudlum has crossed 
+        if theta1 < 0 and theta2 > 0:
+            if cross == 0:
+                cross += 1
+                tcross1 = t + h/2
+            else:
+                cross +=1
+                tcross2 = t +h/2
+                period.append(tcross2 - tcross1)
+                tcross1 = tcross2
+    #appending to the period list 
+    periodlist.append(sum(period)/len(period))
+
+# plot results
+plot(theta0list, periodlist, 'b')
+xlabel("Inital Theta (Radians)")
+ylabel("Period Time (s)")
+title("Initial Value of Theta vs Period")
+grid()
+show()

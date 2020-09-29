@@ -1,0 +1,66 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Sun Mar 17 17:32:38 2019
+
+@author: jakerabinowitz
+"""
+
+from numpy import array, arange, linspace
+from pylab import plot, show, title, xlabel, ylabel
+
+def f(r, t):
+    x = r[0]
+    y = r[1]
+    z = r[2]
+    fx = sigma*(y-x)
+    fy = rho*x-y-x*z
+    fz = x*y-beta*z 
+    return array([fx, fy, fz], float)
+
+#intial condition array
+r = array([0, 1, 0], float)
+sigma = 10.0
+rho = 28.0
+beta = 8/3
+t0 = 0
+tf = 50
+N = 10000
+h = (tf-t0)/N
+
+#intitial condtion arrays for time, x, y, and z
+tvalues = arange(t0, tf, h)
+xvalues = []
+yvalues = []
+zvalues = []
+
+#Range-Kutta loop to solve dif eq
+for t in tvalues:
+    xvalues.append(r[0])
+    yvalues.append(r[1])
+    zvalues.append(r[2])
+    #4th order range-kutta algorithm
+    k1 = h*f(r, t)
+    k2 = h*f(r+ 0.5*k1, t + 0.5*h)
+    k3 = h*f(r+ 0.5*k2, t + 0.5*h)
+    k4 = h*f(r + k3, t + h)
+    r += (k1 + 2*k2 + 2*k3 + k4)/6
+
+
+#Plot for part a
+"""
+plot(tvalues, yvalues, 'k')
+xlabel("$Time$")
+ylabel("$Y$")
+show()
+
+
+
+"""
+
+#Plot for part b
+plot(xvalues, zvalues, 'k')
+title("The Lorentz Attractor" )
+xlabel("X")
+ylabel("Z")
+show()

@@ -1,0 +1,38 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Mar 11 11:19:27 2019
+
+@author: jakerabinowitz
+"""
+
+from numpy import cos, linspace, pi, sin
+from pylab import plot, show
+
+def f(x,t):
+    return cos(t)
+
+#integration parameters
+    
+t0 = 0  #intial
+tf = 10 #final
+
+x = 0 #inital condition
+N = 100 #number of steps 
+h = (tf - t0)/N
+
+tvalues = linspace(t0, tf, N)
+xvalues = []
+
+for t in tvalues:
+    xvalues.append(x)
+    #4th order range-kutta algorithm
+    k1 = h*f(x, t)
+    k2 = h*f(x+ 0.5*k1, t + 0.5*h)
+    k3 = h*f(x+ 0.5*k2, t + 0.5*h)
+    k4 = h*f(x + k3, t + h)
+    x += (k1 + 2*k2 + 2*k3 + k4)/6
+    
+plot(tvalues, xvalues, 'b.')
+plot(tvalues, sin(tvalues), 'r')
+show()

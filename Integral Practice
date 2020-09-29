@@ -1,0 +1,34 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Feb  6 11:05:09 2019
+
+@author: jakerabinowitz
+"""
+
+from numpy import exp, pi, cos, sin, pi, sqrt
+
+
+def f(x):
+    return 1/sqrt(12.55-9.8175(cos(x)+sin(x)))
+
+def integrand(z):
+    if z == 1:
+        return 0;
+    else:
+        return f(1+z/(1-z))/(1-z)**2
+
+N =100000
+a =0.0
+b= 10.0
+h = (b-a)/N
+I = 0
+
+for k in range(1, N+1):
+    I +=.5*h*(integrand(a + (k-1)*h)+ integrand(a+k*h))
+
+print(I)
+
+print("expected value", ((pi)**.5)/2)
+
+

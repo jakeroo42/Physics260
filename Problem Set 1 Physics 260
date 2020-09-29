@@ -1,0 +1,37 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Sat Jan 19 13:42:00 2019
+
+@author: jakerabinowitz
+"""
+#Problem 1
+
+#create a primelist starting with 2
+primelist =[2]
+#initialize prime to be true
+prime = True 
+n = 1
+
+while (n < 1000000) :
+    if n > 1 and n % 2 != 0:
+        prime = True 
+        for factor in range (0, len(primelist)):
+            if (n**.5) < primelist[factor]:
+                break
+            if n%primelist[factor] == 0:
+                prime = False
+                break
+            else :
+                prime = True
+        if prime == True:
+            primelist.append(n)
+    n += 1#counter number
+print(primelist)
+print(len(primelist))
+            
+        
+ 
+
+
+

@@ -1,0 +1,169 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Mar 28 12:22:20 2019
+
+@author: jakerabinowitz
+"""
+
+from numpy import sqrt, array, linspace, arange
+from pylab import plot, show, xlabel, ylabel, title
+import time
+
+"""
+t1 = time.time()
+
+def f(r, t):
+    x = r[0]
+    y = r[1]
+    vx = r[2]
+    vy = r[3]
+    
+    radius = sqrt(x**2 + y**2)
+    dx = vx
+    dy =  vy
+    dvx = -G*M*(x/radius**3)
+    dvy= -G*M*(y/radius**3)
+    return array([dx, dy, dvx, dvy], float)
+
+M = 1.989e30
+G = 6.674e-11
+
+#inital condition
+x0 = 4e12 #meters
+y0 = 0
+vx0 = 0
+vy0 = 500
+
+r = array([x0, y0, vx0, vy0], float)
+
+#RK parameters
+t0 = 0  #intial
+tf = 5000000 #final 
+h = 53000
+
+tvalues = linspace(t0, tf, h)
+xvalues = []
+yvalues = []
+vxvalues = []
+vyvalues = []
+
+for t in tvalues:
+    xvalues.append(r[0])
+    yvalues.append(r[1])
+    vxvalues.append(r[2])
+    vyvalues.append(r[3])
+    #4th order range-kutta algorithm
+    k1 = h*f(r, t)
+    k2 = h*f(r+ 0.5*k1, t + 0.5*h)
+    k3 = h*f(r+ 0.5*k2, t + 0.5*h)
+    k4 = h*f(r + k3, t + h)
+    r += (k1 + 2*k2 + 2*k3 + k4)/6
+    
+#Plot 
+plot(xvalues, yvalues, 'b')
+title("Y vs X ")
+xlabel("y")
+ylabel("x")
+show()
+
+t2 = time.time()
+
+print(t2-t1)
+
+    
+#Part B
+"""
+t1 = time.time()
+
+def f(r):
+    x = r[0]
+    y = r[1]
+    vx = r[2]
+    vy = r[3]
+    
+    radius = sqrt(x**2 + y**2)
+    dx = vx
+    dy =  vy
+    dvx = -G*M*(x/radius**3)
+    dvy= -G*M*(y/radius**3)
+    return array([dx, dy, dvx, dvy], float)
+
+#constants
+M = 1.989e30 #mass of sun
+G = 6.674e-11 #gravitational constant
+
+# initial conditions
+x0 = 4e12 #meters 
+y0 = 0       
+vx0 = 0
+vy0 = 500
+
+r = array([x0, y0, vx0, vy0], float)
+
+#stepsize parameters
+t = 0              
+h = 25000     #initial step size  
+numcross = 0
+delta = 3.171e-2 #meters/second
+
+# lists of data
+xvalues = [x0]
+yvalues =[y0]
+vxvalues = [vx0]
+vyvalues = [vy0]
+
+while numcross <= 2:
+    
+    # do one large step 
+    k1 = 2*h*f(r)
+    k2 = 2*h*f(r + 0.5*k1)
+    k3 = 2*h*f(r + 0.5*k2)
+    k4 = 2*h*f(r + k3)
+    r1 = r + (k1 + 2*k2 + 2*k3 + k4)/6
+    
+    #do two small steps
+    k1 = h*f(r)
+    k2 = h*f(r + 0.5*k1)
+    k3 = h*f(r + 0.5*k2)
+    k4 = h*f(r + k3)
+    r2 = r + (k1 + 2*k2 + 2*k3 + k4)/6
+    
+    k1 = h*f(r2)
+    k2 = h*f(r2 + 0.5*k1)
+    k3 = h*f(r2 + 0.5*k2)
+    k4 = h*f(r2 + k3)
+    r2 += (k1 + 2*k2 + 2*k3 + k4)/6
+               
+    #calculate rho
+    x1 = r1[0]
+    x2 = r2[0]
+    rho = 30*h*delta/abs(x1-x2)
+    
+    if rho >= 1.0:
+        t += 2*h
+        h*=min(rho**.25, 2.0)
+        
+        xold = r[0]
+        
+        r=r2
+        xnew = r[0]
+        
+        if xnew > 0 and xold < 0:
+            numcross += 1
+        
+        # Store data
+        xvalues.append(r[0])
+        yvalues.append(r[1])
+        vyvalues.append(r[2])
+        vyvalues.append(r[3])
+        
+    else:
+           h*=rho**.25
+#Plot 
+plot(xvalues, yvalues, 'b.')
+title("Y vs X ")
+xlabel("y")
+ylabel("x")
+show()
+

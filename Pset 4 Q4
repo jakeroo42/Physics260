@@ -1,0 +1,102 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Feb 21 17:53:35 2019
+
+@author: jakerabinowitz
+"""
+
+#Pset 4 Q4 
+
+from numpy import cos, sin, e, sqrt, zeros, power, savetxt, column_stack
+from pylab import loadtxt, plot, show, jet, hot, title, ylabel, xlabel, legend, linspace 
+from solvematrix import solvematrix
+
+velocitydata = loadtxt("velocity.txt", float) #reading in the data
+
+
+t = velocitydata[:,0]
+V = velocitydata[:,1]
+
+N = len(t)
+
+h = 0.1
+#acceleration
+a = zeros(N, float)
+x = zeros(N, float)
+
+for i in range(N):
+    if i == N - 1:    
+        a[i] = (V[i]- V[i-1])/h #backward differnece
+    else:
+        a[i] = (V[i+1]- V[i])/h  #forward difference
+
+def f(t):
+    position = 0
+    for i in range(int(10*t+1)):
+        position += .5*h*(V[i-1]+V[i])
+    return position
+
+for i in range(N):
+    x[i] = f(i/10)
+    
+#Part B
+#averages that get input in the standard deviation
+aavg1 = sum(a)/len(a)
+aavg2 = sum(power(a,2))/len(a)
+
+sigma = sqrt(aavg2 - aavg1**2)
+asigma = sigma/sqrt(N)
+
+#plot the data 
+plot(t, x, 'b', label="position(t)")
+plot(t, V, 'r', label="velocity(t)")
+plot(t, a, 'g', label="acceleration(t)")
+xlabel("Time (seconds)")
+legend()
+show()
+
+
+
+#part c
+savetxt('position.txt', column_stack([t,x]))
+
+data1 = loadtxt("position.txt", float)
+
+x = data1[:,0]
+y = data1[:,1]
+
+N = len(x) #number of data points
+degree = 2
+
+A = zeros([degree+1, degree+1], float)
+v = zeros([degree+1], float)
+
+for i in range(degree+1):
+    v[i] = sum(y*x**i)
+    for j in range(degree+1):
+        A[i,j] = sum(x**(i+j))
+    
+a = solvematrix(A, v)
+
+s = "Fit to %.3f" %a[0]
+for i in range(1, degree+1):
+    s += "+ %.3f$x^%d$ " %(a[i],i)
+    
+#the x^2 coefficient is .248, which matches up perfectly with .5*a*t^2, becuase acceleration is suppposed to be .5
+
+points = 100
+xmin = min(x)
+xmax = max(x)
+xpol = linspace(xmin, xmax, points)
+ypol = zeros(points, float)
+for n in range(degree+1):
+    ypol += a[n]*xpol**n
+plot(x, y, 'r.' )
+plot(xpol, ypol, 'b', label = s)
+legend()
+show()
+
+
+    
+        

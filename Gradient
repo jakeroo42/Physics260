@@ -1,0 +1,61 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Feb 15 16:14:40 2019
+
+@author: jakerabinowitz
+"""
+
+#Pset 4 Q2
+
+from pylab import plot, xlabel, ylabel, show, xlim, title, hot, jet,linspace, legend, colorbar, imshow
+from numpy import cos, sin, pi, loadtxt, empty
+
+#constants 
+q = 1
+Vmax = 100
+k = 8.99e9
+
+#1m by 1m
+xmin = ymin = 0
+xmax = ymax = 1
+
+sidelength = 1
+points = 100
+density = sidelength/points
+dx = (xmax - xmin)/points
+dy = (ymax - ymin)/points
+separation = .1
+
+#position of charges
+x1 = sidelength/2 + separation/2
+y1 = sidelength/2 
+x2 = sidelength/2 - separation/2
+y2 = sidelength/2
+
+#2D array
+V = empty([points, points], float)
+
+
+for i in range(points):
+    y = ymin + i*dy
+    for j in range(points):
+        x = xmin +j*dx
+        r1 = ((x-x1)**2+(y-y1)**2)**.5+ 
+        r2 = ((x-x2)**2+(y-y2)**2)**.5
+        if r1 == 0:
+            V[i,j] = Vmax
+        if r2 == 0:
+            V[i,j] = Vmax
+        else:
+            V[i,j] = k*q/r1 + (k*q/r2)
+            
+#density plot
+imshow(V, origin = "lower", extent= [xmin, xmax, ymin, ymax])
+colorbar()
+jet()
+title("Electric Field for 2 Point Charges")
+xlabel("Distance (cm)")
+ylabel("Distance (cm)")
+show()
+

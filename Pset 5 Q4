@@ -1,0 +1,48 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Feb 26 16:40:23 2019
+
+@author: jakerabinowitz
+"""
+
+#Pset 5 Q4
+
+from numpy import array, sqrt, exp
+from solvematrix import solvematrix
+
+def f(v1,v2):
+    f1 = (v1 - vplus)/R1 + v1/R2 + Io*(exp((v1-v2)/VT) - 1)
+    f2 = (v2-vplus)/R3 + v2/R4 - Io*(exp((v1-v2)/VT) - 1)
+    return array([f1, f2], float)
+    
+def gradf(v1,v2):
+    df1dv1 = 1/R1 + 1/R2 + Io/VT*exp((v1-v2)/VT)    #v1partial of f1
+    df1dv2 = -Io/VT*exp((v1-v2)/VT)                 #v2partial of f1
+    df2dv1 = -Io/VT*exp((v1-v2)/VT)                 #v1partial of f2
+    df2dv2 = Io/VT*exp((v1-v2)/VT) + 1/R3 + 1/R4    #v2partial of f2
+    return array([[df1dv1, df1dv2],
+                  [df2dv1, df2dv2]], float)
+#constants
+Io = 3e-9 #amps
+VT = 0.05 #volts
+vplus = 5 #volts
+R1 = 1e3 #ohms
+R2 = 4e3 #ohms
+R3 = 3e3 #ohms
+R4 = 2e3 #ohms
+
+#initial guesses
+v1 = 0
+v2 = 0
+delta = array([1.0, 1.0], float)
+accuracy = 1e-4
+
+while sqrt(delta[0]**2+delta[1]**2) > accuracy:
+    delta = solvematrix(gradf(v1, v2), f(v1,v2))
+    v1 -= delta[0]
+    v2 -= delta[1]
+
+print("v1 = ", v1, "volts" , "v2 = ", v2, "volts")
+
+print("potential drop, " , abs(v2 - v1), "volts")
